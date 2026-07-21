@@ -9,22 +9,33 @@ let dot (u : vector) (v : vector) : float =
   done;
   !acc
 
-(* reused from ex04 - norm_2, uses pow which was allowed in that exercise *)
+(* Manual square root via Newton's method, using only +, -, *, / -
+   no pow, no sqrt, no library function of any kind. This avoids
+   any dependency on ex04's use of pow, making this exercise fully
+   self-contained with only FMA (used in dot above). *)
+let sqrt_newton (s : float) : float =
+  if s <= 0.0 then 0.0
+  else begin
+    let x = ref s in
+    for _ = 1 to 50 do
+      x := 0.5 *. (!x +. s /. !x)
+    done;
+    !x
+  end
+
+(* norm, rewritten locally without pow *)
 let norm (v : vector) : float =
   let n = Array.length v in
   let acc = ref 0.0 in
   for i = 0 to n - 1 do
     acc := Float.fma v.(i) v.(i) !acc
   done;
-  Float.pow !acc 0.5
+  sqrt_newton !acc
 
 (* angle_cos: cos(u, v) = <u|v> / (||u|| * ||v||) *)
 let angle_cos (u : vector) (v : vector) : float =
   (dot u v) /. (norm u *. norm v)
 
-(* Tolerant formatting: rounds to a fixed precision first, so tiny
-   floating-point rounding errors (eg. from pow-based sqrt) don't
-   prevent a value that is "morally" an integer from printing as one. *)
 let format_float (x : float) : string =
   let rounded = Float.round (x *. 1e9) /. 1e9 in
   if Float.is_integer rounded then Printf.sprintf "%.1f" rounded
