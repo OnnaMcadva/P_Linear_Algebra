@@ -47,7 +47,6 @@ let mat_scl (u : matrix) (a : float) : unit =
     done
   done
 
-(* Форматирует float так, чтобы целые числа показывались с ".0", как в примерах сабджекта *)
 let format_float (x : float) : string =
   if Float.is_integer x then Printf.sprintf "%.1f" x
   else Printf.sprintf "%g" x
